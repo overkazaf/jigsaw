@@ -97,7 +97,7 @@
 								top : t,
 								'z-index' : 0,
 								'background-position' : '-' + x +' -' + y
-							});
+							}).attr('data-suffle-index', ic);
 							$fragment.append(blocks[current]);
 						}
 					}
@@ -108,28 +108,34 @@
 					var targetTop = currentOffset.top;
 					if (fromIndex === -1 || fromIndex === toIndex) {
 						$movedElement.animate({
-							'z-index' : 0,
 							left : targetLeft + 'px',
 							top : targetTop + 'px'
-						}, 'swing'); 
+						}, opt.animateTime , 'swing', function(){
+							$movedElement.css('z-index', 0);
+							$movedElement = null;
+						}); 
 					} else {
 						var to = blocks[toIndex];
 						var toOffset = to.offset();
 						var tl = toOffset.left - $(that).offset().left;
 						var tt = toOffset.top - $(that).offset().top;
 						$movedElement.animate({
-							'z-index' : 0,
 							left : tl + 'px',
 							top : tt + 'px'
-						}, 'swing'); 
+						},opt.animateTime ,  'swing', function(){
+							$movedElement.css('z-index', 0);
+							$movedElement = null;
+						}).attr('data-index', toIndex); 
 
 						blocks[toIndex].animate({
-							'z-index' : 0,
 							left : targetLeft + 'px',
 							top : targetTop + 'px'
-						}, 'swing'); 
+						}, opt.animateTime, 'swing').attr('data-index', fromIndex, function(){
+							$movedElement.css('z-index', 0);
+							$movedElement = null;
+						}); 
 					}
-					log('swapping ' + fromIndex + ' to ' + toIndex);
+					
 
 					// update position
 					// $movedElement.css({
@@ -174,7 +180,9 @@
 					var originX = x - offsetL;
 					var originY = y - offsetT;
 
-					$movedElement = $target;
+					$movedElement = $target.css({
+						'z-index' : 10
+					});
 
 					$target.attr('data-x', originX);
 					$target.attr('data-y', originY);
@@ -185,11 +193,9 @@
 					ev = ev || window.event;
 					var x = ev.pageX;
 					var y = ev.pageY;
-					
 					var deltaX = x - $movedElement.attr('data-x');
 					var deltaY = y - $movedElement.attr('data-y');
 					$movedElement.css({
-						'z-index' : 10,
 						left : deltaX + 'px',
 						top : deltaY + 'px'
 					});
@@ -198,16 +204,30 @@
 					ev = ev || window.event;
 					var x = ev.pageX;
 					var y = ev.pageY;
-					var toIndex = -1;
-
-					if(-1 !== (toIndex = jigsaw.checkHoverIndex({x : x, y : y}))){
+					var toIndex = jigsaw.checkHoverIndex({x : x, y : y});
+					log(toIndex);
+					if(-1 !== toIndex){
 						jigsaw.swapBlock(currentIndex, toIndex);
 					} else {
 						jigsaw.swapBlock(-1, currentIndex);
 					}
-
 					$(document).off('mousemove', jigsaw.dragging);
 					$(document).off('mouseup', jigsaw.dragEnd);
+
+					jigsaw.checkSuccess();
+				},
+				checkSuccess : function(){
+					var blocks = jigsaw.blocks;
+					var indexArray = jigsaw.indexArray;
+					var flag = true;
+					$.each(blocks, function(idx){
+						if(this.attr('data-suffle-index') != this.attr('data-index')){
+							flag = false;
+						}
+					});
+					if(flag){
+						alert('You\'ve successfully made it!');
+					}
 				},
 				checkHoverIndex : function(offset){
 					var pos = jigsaw.calcPosition();
@@ -217,7 +237,7 @@
 					for (var i=0,l=pos.length; i<l; i++) {
 						var c = pos[i];
 						if (x >= c.left && x <= c.right && y >= c.top && y <= c.bottom){ 
-							return blocks[i].attr('data-index');
+							return i;
 						}
 					}
 					return -1;
@@ -227,8 +247,8 @@
 					var pos = [];
 					$.each(blocks, function(){
 						var offset = $(this).offset();
-						var w = $(this).width();
-						var h = $(this).height();
+						var w = $(this).outerWidth();
+						var h = $(this).outerHeight();
 						var os = {
 							left : offset.left,
 							top :offset.top,
@@ -254,6 +274,7 @@
 	$.fn.Jigsaw.defaults = {
 		row : 3,
 		col : 3,
+		animateTime : 500,
 		context : '#map',
 		blockClass : '.block',
 		src : 'images/demo.jpg'
