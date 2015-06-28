@@ -21,6 +21,7 @@
 			var currentOffset = {};
 			var jigsaw = {
 				blocks : [],
+				isAnimating : false,
 				indexArray : [],
 				$fragment : null,
 				init : function(){
@@ -116,6 +117,9 @@
 					var blocks = this.blocks;
 					var targetLeft = currentOffset.left;
 					var targetTop = currentOffset.top;
+
+
+					jigsaw.isAnimating = true;
 					if (fromIndex === -1) {
 						// reset position
 						$movedElement.animate({
@@ -125,6 +129,7 @@
 							$movedElement.css('z-index', 0);
 							$movedElement = null;
 							jigsaw.checkSuccess();
+							jigsaw.isAnimating = false;
 						}); 
 					} else {
 						
@@ -145,6 +150,7 @@
 							top : targetTop + 'px'
 						}, opt.animateTime, 'swing', function(){
 							jigsaw.checkSuccess();
+							jigsaw.isAnimating = false;
 						});
 						
 						currentIndex = -1; 
@@ -171,8 +177,10 @@
 				dragStart : function(ev){
 					var _this_ = this;
 					ev = ev || window.event;
-					
+					if(jigsaw.isAnimating)return;
 					if(ev.which !== 1)return;
+					
+
 
 					var x = ev.pageX;
 					var y = ev.pageY;
@@ -199,6 +207,7 @@
 					$target.attr('data-y', originY);
 					$(document).on('mousemove', jigsaw.dragging);
 					$(document).on('mouseup', jigsaw.dragEnd);
+					return false;
 				},
 				dragging : function(ev){
 					ev = ev || window.event;
@@ -296,7 +305,7 @@
 	$.fn.Jigsaw.defaults = {
 		row : 3,
 		col : 3,
-		animateTime : 500,
+		animateTime : 250,
 		context : '#map',
 		blockClass : 'block',
 		src : 'images/demo.jpg'
