@@ -232,7 +232,7 @@
 					for (var i=0, l=pos.length; i<l; i += opt.row) {
 						var s = pos[i];
 						for (var j=i+1, lr = opt.row-1; lr>0; j++,lr--) {
-							log(pos[j].left, pos[j].top);
+							//log(pos[j].left, pos[j].top);
 							if(s.left <= pos[j].left && s.top < pos[j].top){
 								continue;
 							} else {
