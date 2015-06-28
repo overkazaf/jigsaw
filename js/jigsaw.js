@@ -242,7 +242,7 @@
 					}
 					if(flag){
 						alert('You\'ve already crack the jigsaw puzzle!');
-						if(confirm('再来一局?')){
+						if(confirm('One more time?')){
 							jigsaw.restart();
 						}
 					}
