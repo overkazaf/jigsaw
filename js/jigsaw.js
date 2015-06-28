@@ -70,7 +70,8 @@
 					        return this;
 					    };
 					}
-					this.indexArray.shuffle();
+					var indexArray = this.indexArray;
+					indexArray.shuffle();
 				},
 				rebuildFragment : function(){
 					var blocks = this.blocks;
@@ -97,16 +98,20 @@
 								top : t,
 								'z-index' : 0,
 								'background-position' : '-' + x +' -' + y
-							}).attr('data-suffle-index', ic);
+							}).attr({
+								'class' : opt.blockClass
+							});
 							$fragment.append(blocks[current]);
 						}
 					}
 				},
 				swapBlock : function(fromIndex, toIndex){
+
 					var blocks = this.blocks;
 					var targetLeft = currentOffset.left;
 					var targetTop = currentOffset.top;
-					if (fromIndex === -1 || fromIndex === toIndex) {
+					if (fromIndex === -1) {
+						// reset position
 						$movedElement.animate({
 							left : targetLeft + 'px',
 							top : targetTop + 'px'
@@ -115,6 +120,7 @@
 							$movedElement = null;
 						}); 
 					} else {
+						
 						var to = blocks[toIndex];
 						var toOffset = to.offset();
 						var tl = toOffset.left - $(that).offset().left;
@@ -125,15 +131,14 @@
 						},opt.animateTime ,  'swing', function(){
 							$movedElement.css('z-index', 0);
 							$movedElement = null;
-						}).attr('data-index', toIndex); 
+						}); 
 
-						blocks[toIndex].animate({
+						to.animate({
 							left : targetLeft + 'px',
 							top : targetTop + 'px'
-						}, opt.animateTime, 'swing').attr('data-index', fromIndex, function(){
-							$movedElement.css('z-index', 0);
-							$movedElement = null;
-						}); 
+						}, opt.animateTime, 'swing');
+						
+						currentIndex = -1; 
 					}
 					
 
@@ -168,7 +173,6 @@
 					var $target = $(target);
 					var offset = $target.offset();
 					currentIndex = $target.attr('data-index');
-					
 					
 					var offsetL = offset.left - $(that).offset().left;
 					var offsetT = offset.top - $(that).offset().top;
@@ -205,8 +209,8 @@
 					var x = ev.pageX;
 					var y = ev.pageY;
 					var toIndex = jigsaw.checkHoverIndex({x : x, y : y});
-					log(toIndex);
-					if(-1 !== toIndex){
+					if(-1 != toIndex){
+						//log('from ' + currentIndex + ' to ' + toIndex);
 						jigsaw.swapBlock(currentIndex, toIndex);
 					} else {
 						jigsaw.swapBlock(-1, currentIndex);
@@ -217,17 +221,26 @@
 					jigsaw.checkSuccess();
 				},
 				checkSuccess : function(){
-					var blocks = jigsaw.blocks;
-					var indexArray = jigsaw.indexArray;
+					var pos = jigsaw.calcPosition();
 					var flag = true;
-					$.each(blocks, function(idx){
-						if(this.attr('data-suffle-index') != this.attr('data-index')){
-							flag = false;
+
+					log('========================');
+					for (var i=0, l=pos.length; i<l; i += opt.row) {
+						var s = pos[i];
+						log(s.left, s.top);
+						for (var j=i+1, lr = opt.row-1; lr>0; j++,lr--) {
+							log(pos[j].left, pos[j].top);
+							if(s.left <= pos[j].left && s.top < pos[j].top){
+								continue;
+							} else {
+								flag = false;break;
+							}
 						}
-					});
-					if(flag){
-						alert('You\'ve successfully made it!');
 					}
+					if(flag){
+						alert('You\'ve already crack the jigsaw puzzle!');
+					}
+
 				},
 				checkHoverIndex : function(offset){
 					var pos = jigsaw.calcPosition();
@@ -235,6 +248,7 @@
 					var x = offset.x;
 					var y = offset.y;
 					for (var i=0,l=pos.length; i<l; i++) {
+						if(i == currentIndex)continue;
 						var c = pos[i];
 						if (x >= c.left && x <= c.right && y >= c.top && y <= c.bottom){ 
 							return i;
@@ -243,9 +257,10 @@
 					return -1;
 				},
 				calcPosition : function(){
+
 					var blocks = this.blocks;
 					var pos = [];
-					$.each(blocks, function(){
+					$.each(blocks, function(idx){
 						var offset = $(this).offset();
 						var w = $(this).outerWidth();
 						var h = $(this).outerHeight();
@@ -255,10 +270,11 @@
 							right : offset.left + w,
 							bottom : offset.top + h
 						};
-
+						//log(os);
 						pos.push(os);
 					});
-
+					//log('========current==============', currentIndex);
+					//log(pos[currentIndex]);
 					return pos;
 				}
 			};
@@ -276,7 +292,7 @@
 		col : 3,
 		animateTime : 500,
 		context : '#map',
-		blockClass : '.block',
+		blockClass : 'block',
 		src : 'images/demo.jpg'
 	};
 
