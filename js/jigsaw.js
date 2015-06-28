@@ -242,9 +242,9 @@
 					}
 					if(flag){
 						alert('You\'ve already crack the jigsaw puzzle!');
-						if(confirm('One more time?')){
-							jigsaw.restart();
-						}
+						// if(confirm('One more time?')){
+						// 	//jigsaw.restart();
+						// }
 					}
 
 				},
