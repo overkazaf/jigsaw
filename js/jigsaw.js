@@ -30,6 +30,12 @@
 					this.render();
 					this.bindEvents();
 				},
+				restart : function (){
+					this.shuffle();
+					this.rebuildFragment();
+					this.render();
+					this.bindEvents();
+				},
 				initLayout : function(){
 					var c,
 						r,
@@ -118,6 +124,7 @@
 						}, opt.animateTime , 'swing', function(){
 							$movedElement.css('z-index', 0);
 							$movedElement = null;
+							jigsaw.checkSuccess();
 						}); 
 					} else {
 						
@@ -136,7 +143,9 @@
 						to.animate({
 							left : targetLeft + 'px',
 							top : targetTop + 'px'
-						}, opt.animateTime, 'swing');
+						}, opt.animateTime, 'swing', function(){
+							jigsaw.checkSuccess();
+						});
 						
 						currentIndex = -1; 
 					}
@@ -164,8 +173,6 @@
 					ev = ev || window.event;
 					
 					if(ev.which !== 1)return;
-
-
 
 					var x = ev.pageX;
 					var y = ev.pageY;
@@ -217,17 +224,13 @@
 					}
 					$(document).off('mousemove', jigsaw.dragging);
 					$(document).off('mouseup', jigsaw.dragEnd);
-
-					jigsaw.checkSuccess();
 				},
 				checkSuccess : function(){
 					var pos = jigsaw.calcPosition();
 					var flag = true;
 
-					log('========================');
 					for (var i=0, l=pos.length; i<l; i += opt.row) {
 						var s = pos[i];
-						log(s.left, s.top);
 						for (var j=i+1, lr = opt.row-1; lr>0; j++,lr--) {
 							log(pos[j].left, pos[j].top);
 							if(s.left <= pos[j].left && s.top < pos[j].top){
@@ -239,6 +242,9 @@
 					}
 					if(flag){
 						alert('You\'ve already crack the jigsaw puzzle!');
+						if(confirm('再来一局?')){
+							jigsaw.restart();
+						}
 					}
 
 				},

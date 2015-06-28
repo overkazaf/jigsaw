@@ -5,6 +5,15 @@
 	<title>Document</title>
 
 	<style type="text/css">
+		#small{
+			position: absolute;
+			left : 5px;
+			top: 5px;
+			width:150px;
+			height:98px;
+			background: url(images/demo.jpg) 0 0 no-repeat;
+			background-size: 100% 100%;
+		}
 		#map {
 			position: absolute;
 			left : 50%;
@@ -15,10 +24,11 @@
 			height:588px;
 			background:#aaa;
 		};
-		.block {background:#baff00;position:absolute;cursor:pointer;}
+		.block {background:#baff00;position:absolute;cursor:pointer;box-sizing: border-box;-moz-box-sizing: border-box;-webkit-box-sizing: border-box;}
 	</style>
 </head>
 <body>
+	<div id="small"></div>
 	<div id="map"></div>
 </body>
 <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
