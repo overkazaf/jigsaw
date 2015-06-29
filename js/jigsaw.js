@@ -35,12 +35,14 @@
 					this.shuffle();
 					this.rebuildFragment();
 					this.render();
-					this.bindEvents();
+					//this.bindEvents();
 				},
 				initLayout : function(){
 					var c,
 						r,
 						_this_ = this,
+						blocks = this.blocks,
+						indexArray = this.indexArray,
 						$this = $(opt.context),
 						w = parseInt(containerRect.width / opt.col),
 						h = parseInt(containerRect.height / opt.row),
@@ -64,8 +66,8 @@
 								background : bg,
 								'background-position' : '-' + x + ' -' + y
 							}).attr('data-index', index);
-							_this_.blocks.push(div);
-							_this_.indexArray.push(index);
+							blocks.push(div);
+							indexArray.push(index);
 						}
 					}
 					this.$fragment = $fragment;
@@ -243,6 +245,7 @@
 						for (var j=i+1, lr = opt.row-1; lr>0; j++,lr--) {
 							//log(pos[j].left, pos[j].top);
 							if(s.left <= pos[j].left && s.top < pos[j].top){
+								s = pos[j];
 								continue;
 							} else {
 								flag = false;break;
@@ -251,9 +254,9 @@
 					}
 					if(flag){
 						alert('You\'ve already crack the jigsaw puzzle!');
-						// if(confirm('One more time?')){
-						// 	//jigsaw.restart();
-						// }
+						if(confirm('One more time?')){
+							jigsaw.restart();
+						}
 					}
 
 				},
