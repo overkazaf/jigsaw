@@ -15,7 +15,9 @@
 				width : $(that).width(),
 				height : $(that).height()
 			};
-			var opt = $.extend({}, options, $.fn.Jigsaw.defaults);
+			var opt = $.extend({}, $.fn.Jigsaw.defaults, options || {});
+
+			log(opt);
 			var $movedElement = null;
 			var currentIndex = -1;
 			var currentOffset = {};
@@ -53,7 +55,7 @@
 						for (var j = 0, c = opt.col; j < c; j++) {
 							var x = j*w + 'px';
 							var y = i*h + 'px';
-							var index = i*r + j;
+							var index = i*opt.col + j;
 							var div = $('<div>').css({
 								position : 'absolute',
 								cursor : 'pointer',
@@ -80,28 +82,47 @@
 					    };
 					}
 					var indexArray = this.indexArray;
+					var tests ='';
+					var tot = opt.col * opt.row;
+					for(var k=0;k<tot; k++){
+						if(k)tests += ',';
+						tests += k;
+					}
 					indexArray.shuffle();
+					
+					while(indexArray.join(',') === tests){
+						indexArray.shuffle();
+					};
 				},
 				rebuildFragment : function(){
 					var blocks = this.blocks;
 					var $fragment = this.$fragment;
-					var indexArray = this.indexArray;
+					var indexArray = jigsaw.indexArray;
 
 					$fragment.html('');
 
 					var w = parseInt(containerRect.width / opt.col),
 						h = parseInt(containerRect.height / opt.row);
+
+					var arr = [];
 					for (var i=0;i<opt.row; i++) {
 						for (var j=0;j<opt.col; j++){
-							var current = i*opt.row + j;
+							// verticle push
+							var current = parseInt(i*opt.col + j);
 							var ic = indexArray[current];
-							var l = Math.floor(ic / opt.row);
-							var t = ic % opt.col;
+							var t;
+							var l;
+							
+							t = ic < opt.row ? 0 : ~~(ic / opt.row);
+							l = ic % opt.col;
 
+							
+							arr.push(t+','+l);
 							l = l*w + 'px';
 							t = t*h + 'px';
-							var x = i*w + 'px';
-							var y = j*h + 'px';
+							
+							var y = i*h + 'px';
+							var x = j*w + 'px';
 							blocks[current].css({
 								left : l,
 								top : t,
@@ -113,6 +134,15 @@
 							$fragment.append(blocks[current]);
 						}
 					}
+					log(arr.sort(function(a, b){
+						var t1 = a.split(',');
+						var t2 = b.split(',');
+						if(t1[0] == t2[0]){
+							return t1[1] - t2[1];
+						} else {
+							return t1[0] - t2[0];
+						}
+					}));
 				},
 				swapBlock : function(fromIndex, toIndex){
 
@@ -167,7 +197,7 @@
 					// });
 				},
 				render : function(){
-					this.$fragment.appendTo($('#map'));
+					this.$fragment.appendTo($(opt.context));
 				},
 				bindEvents : function(){
 					var _this_ = this;
@@ -242,16 +272,18 @@
 
 					for (var i=0, l=pos.length; i<l; i += opt.row) {
 						var s = pos[i];
+						log(s.left, s.top);
 						for (var j=i+1, lr = opt.row-1; lr>0; j++,lr--) {
-							//log(pos[j].left, pos[j].top);
-							if(s.left <= pos[j].left && s.top < pos[j].top){
+							log(pos[j].left, pos[j].top);
+							if(s.left < pos[j].left && s.top == pos[j].top){
 								s = pos[j];
 								continue;
 							} else {
-								flag = false;break;
+								flag = false;
 							}
 						}
 					}
+					log('======================================================');
 					if(flag){
 						alert('You\'ve already crack the jigsaw puzzle!');
 						if(confirm('One more time?')){
