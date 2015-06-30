@@ -62,8 +62,6 @@
 							var div = $('<div>').css({
 								position : 'absolute',
 								cursor : 'pointer',
-								left : x,
-								top : y,
 								width : w + 'px',
 								height : h + 'px',
 								outline : '2px solid #fff',
@@ -183,10 +181,8 @@
 				},
 				render : function(){
 					this.$fragment.appendTo($(opt.context));
-					jigsaw.startTime = +new Date();
-					jigsaw.elapse = 0;
 					$(that).data('status','running');
-					jigsaw.timerStart();
+					jigsaw.timerReset();
 				},
 				timerStart: function (){
 					jigsaw.counter = setInterval(function(){
@@ -214,7 +210,7 @@
 					var _this_ = this;
 					var blocks = this.blocks;
 					$.each(blocks, function(){
-						$(this).on('mousedown', _this_.dragStart);
+						$(this).off('mousedown').on('mousedown', _this_.dragStart);
 					});
 				},
 				dragStart : function(ev){
@@ -282,22 +278,29 @@
 					// log('========================= Comparing =========================');
 					for (var i=0, l=pos.length; i<l; i += opt.row) {
 						var s = pos[i];
-						//log(s.left, s.top);
-						for (var j=i+1, lr = opt.row-1; lr>0; j++,lr--) {
-							//log(pos[j].left, pos[j].top);
-							if(s.left < pos[j].left && ~~s.top == ~~pos[j].top){
-								s = pos[j];
-								continue;
+						for (var j=i+1; j< opt.row; j++) {
+							if (opt.row <= opt.col) {
+								if(parseInt(s.left) < parseInt(pos[j].left) && parseInt(s.top) == parseInt(pos[j].top)){
+									s = pos[j];
+									continue;
+								} else {
+									flag = false;break;
+								}
 							} else {
-								flag = false;break;
+								if(parseInt(s.left) == parseInt(pos[j].left) && parseInt(s.top) < parseInt(pos[j].top)){
+									s = pos[j];
+									continue;
+								} else {
+									flag = false;break;
+								}
 							}
 						}
 					}
 					if(flag){
 						alert('You\'ve already crack the jigsaw puzzle in ' + jigsaw.elapse+ ' seconds!');
+						jigsaw.timerStop();
+						$(that).data('status','');
 						if(confirm('One more time?')){
-							jigsaw.timerStop();
-							$(that).data('status','');
 							jigsaw.restart();
 						}
 					}

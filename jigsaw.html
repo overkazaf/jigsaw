@@ -101,20 +101,28 @@
 			} else {
 				row = col = $('#level').find('option:selected').val();
 			}
+			
+			var fnStart = function(){
+				$('#timeSpan').empty();
+				$('#map').empty().Jigsaw({
+					row : +row,
+					col : +col,
+					animateTime : 250,
+					context : '#map',
+					blockClass : 'block',
+					src : 'images/demo.jpg'
+				});
+			};
 			// force to empty the innerHTML and start, lol
 			if ($('#map').data('status') == 'running') {
-				alert('Game is running, please solve this first, no cheating!');
-				return;
+				if(confirm('Game is running, please solve this first, or restart ?')){
+					fnStart();
+				}
+			} else {
+				fnStart();
 			}
-			$('#timeSpan').empty();
-			$('#map').empty().Jigsaw({
-				row : +row,
-				col : +col,
-				animateTime : 250,
-				context : '#map',
-				blockClass : 'block',
-				src : 'images/demo.jpg'
-			});
+			
+
 		});
 		
 	});
