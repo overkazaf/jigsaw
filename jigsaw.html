@@ -5,12 +5,13 @@
 	<title>Crack Me dude, I want to play a game!</title>
 
 	<style type="text/css">
+		body{font-family: "Microsoft Yahei";}
 		#small{
-			position: relative;
+			position: absolute;
 			left : 10px;
 			top: 10px;
-			width:150px;
-			height:98px;
+			width:300px;
+			height:196px;
 			cursor: pointer;
 			background: url(images/demo.jpg) 0 0 no-repeat;
 			background-size: 100% 100%;
@@ -19,7 +20,6 @@
 		#map {
 			position: absolute;
 			margin-top:100px;
-			margin-bottom:100px;
 			left : 60%;
 			top: 50%;
 			z-index: 1;
@@ -27,9 +27,14 @@
 			margin-top:-294px;
 			width:900px;
 			height:588px;
+			background-color: #aaf;
+			line-height:88px;font-size:50px;text-align: center;
 			box-shadow: 0 0 10px #aaa;
-		};
+		}
 
+		#startGame{
+			display:inline;border:none;color:#fff; background: #cb60b3; /* Old browsers */ background: -moz-linear-gradient(top, #cb60b3 0%, #ad1283 50%, #de47ac 100%);/* FF3.6+ */ background: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #cb60b3),color-stop(50%, #ad1283), color-stop(100%, #de47ac) ); /* Chrome,Safari4+ */ background : -webkit-linear-gradient( top, #cb60b3 0%,#ad1283 50%, #de47ac 100%); /* Chrome10+,Safari5.1+ */ background: -o-linear-gradient(top, #cb60b3 0%, #ad1283 50%, #de47ac 100%);/* Opera 11.10+ */ background: -ms-linear-gradient(top, #cb60b3 0%, #ad1283 50%, #de47ac 100%);/* IE10+ */ background: linear-gradient(to bottom, #cb60b3 0%, #ad1283 50%, #de47ac 100%);/* W3C */ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cb60b3',endColorstr='#de47ac', GradientType=0 ); /* IE6-9 */font-size:16px;width:40px;height:40px;border-radius: 50%;cursor: pointer;
+		}
 		.diy {display: inline;}
 		.diy input{width:20px;}
 		.panel{
@@ -38,37 +43,43 @@
 			width:auto;
 			height:100px;
 		}
-		#timeSpan{border:1px solid #aaa;display:block;position:fixed;left:10px;bottom:10px;width:220px;text-align: center;color:#4198ce;height:32px;line-height: 32px;}
-		.panel ul {border-radius:4px;background: #eef;padding:0;width:220px;}
+		#timeSpan{border:1px solid #aaa;display:block;position:fixed;left:10px;bottom:10px;width:300px;text-align: center;color:#4198ce;height:32px;line-height: 32px;}
+		.panel ul {border-radius:4px;background: #eef;padding:0;width:300px;}
 		.panel ul li{list-style:none;width:100%;height:auto;line-height: 32px;text-align: center;cursor: pointer;margin-bottom:10px;}
 		.block {position:absolute;cursor:pointer;box-sizing: border-box;-moz-box-sizing: border-box;-webkit-box-sizing: border-box;}
 	</style>
 </head>
 <body>
 	<div id="small"></div>
-	<div id="map"></div>
+	<div id="map">
+		<p><h4>Choose a level to start</h4></p>
+		<p>Drag debris to the correct position</p>
+		<p>Quite easy, enjoy it</p>
+	</div>
 	<div class="panel">
 		<ul>
 			<li>
-				<span>游戏难度</span>
+				<strong>Game Level</strong>
 				<select id="level">
-					<option value="2">2 * 2</option>
+					<option value="2" selected>2 * 2</option>
 					<option value="3">3 * 3</option>
 					<option value="4">4 * 4</option>
 				</select>
 				<div class="diy">
-					<div>行<input type="text">  列<input type="text"> <button id="startGame"> GO</button></div>
+					<div>(DIY:)   Row <input type="text">  Column <input type="text"> <button id="startGame"> GO</button></div>
 				</div>
 			</li>
+			<!--
+				<li>
+					<strong>上传图片<input type="file"></strong>
+				</li>
+				<li>
+					<strong>竞速模式</strong>
+					<div class="contents"></div>
+				</li>
+			-->
 			<li>
-				<span>上传图片<input type="file"></span>
-			</li>
-			<li>
-				<span>竞速模式</span>
-				<div class="contents"></div>
-			</li>
-			<li>
-				<span><a alt="my github" title="my github" href="https://github.com/overkazaf/jigsaw">Fork Me</a></span>
+				<strong><a alt="https://github.com/overkazaf/jigsaw" title="https://github.com/overkazaf/jigsaw" href="https://github.com/overkazaf/jigsaw">Fork Me</a></strong>
 			</li>
 		</ul>
 	</div>
@@ -80,22 +91,25 @@
 <script type="text/javascript" src="js/jigsaw.js"></script>
 <script type="text/javascript">
 	$(function(){
-		$('li').each(function (index){
-			if (index ^ 1) {
-				$(this).css({
-					background : '#aaa'
-				});
-			} else {
-				$(this).css({
-					background : '#fff'
-				});
-			}
-		});
 
-		$('#btn').on('click', function (){
-			$('#map').Jigsaw({
-				row : 2,
-				col : 4,
+		$('#startGame').on('click', function (){
+			var aDiy = $('.diy').find('input');
+			var row = aDiy.first().val();
+			var col = aDiy.last().val();
+			if(row && col && !isNaN(row) && !isNaN(col) && row > 0 && col > 0){
+				// 取自定义参数
+			} else {
+				row = col = $('#level').find('option:selected').val();
+			}
+			// force to empty the innerHTML and start, lol
+			if ($('#map').data('status') == 'running') {
+				alert('Game is running, please solve this first, no cheating!');
+				return;
+			}
+			$('#timeSpan').empty();
+			$('#map').empty().Jigsaw({
+				row : +row,
+				col : +col,
 				animateTime : 250,
 				context : '#map',
 				blockClass : 'block',

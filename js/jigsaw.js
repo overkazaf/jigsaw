@@ -17,15 +17,17 @@
 			};
 			var opt = $.extend({}, $.fn.Jigsaw.defaults, options || {});
 			var $time = $(opt.timeSpan);
-			alert($time.html());
 			var $movedElement = null;
 			var currentIndex = -1;
 			var currentOffset = {};
 			var jigsaw = {
 				counter : null,
+				startTime : 0,
+				elapse : 0,
 				blocks : [],
 				isAnimating : false,
 				indexArray : [],
+				status : 'end',
 				$fragment : null,
 				init : function(){
 					this.initLayout();
@@ -178,34 +180,35 @@
 						
 						currentIndex = -1; 
 					}
-					
-
-					// update position
-					// $movedElement.css({
-					// 	'z-index' : 0,
-					// 	left : deltaX + 'px',
-					// 	top : deltaY + 'px'
-					// });
 				},
 				render : function(){
 					this.$fragment.appendTo($(opt.context));
+					jigsaw.startTime = +new Date();
+					jigsaw.elapse = 0;
+					$(that).data('status','running');
 					jigsaw.timerStart();
 				},
 				timerStart: function (){
-					jigsaw.startTime = +new Date();
-					jigsaw.elapse = 0;
 					jigsaw.counter = setInterval(function(){
 						jigsaw.elapse++;
-						$time.html(jigsaw.elapse);
+						$time.html('Time elapses: ' + jigsaw.elapse + ' seconds');
 					}, 1000);
 				},
 				timerStop : function (){
+					jigsaw.elapse = 0;
 					clearInterval(jigsaw.counter);
 					jigsaw.counter = null;
 				},
 				timerReset : function(){
 					jigsaw.timerStop();
 					jigsaw.timerStart();
+				},
+				off : function (){
+					var _this_ = this;
+					var blocks = this.blocks;
+					$.each(blocks, function(){
+						$(this).off('mousedown', _this_.dragStart);
+					});
 				},
 				bindEvents : function(){
 					var _this_ = this;
@@ -220,8 +223,6 @@
 					if(jigsaw.isAnimating)return;
 					if(ev.which !== 1)return;
 					
-
-
 					var x = ev.pageX;
 					var y = ev.pageY;
 					var target = ev.target || ev.srcElement;
@@ -278,12 +279,12 @@
 				checkSuccess : function(){
 					var pos = jigsaw.calcPosition();
 					var flag = true;
-					log('========================= Comparing =========================');
+					// log('========================= Comparing =========================');
 					for (var i=0, l=pos.length; i<l; i += opt.row) {
 						var s = pos[i];
-						log(s.left, s.top);
+						//log(s.left, s.top);
 						for (var j=i+1, lr = opt.row-1; lr>0; j++,lr--) {
-							log(pos[j].left, pos[j].top);
+							//log(pos[j].left, pos[j].top);
 							if(s.left < pos[j].left && ~~s.top == ~~pos[j].top){
 								s = pos[j];
 								continue;
@@ -293,8 +294,10 @@
 						}
 					}
 					if(flag){
-						alert('You\'ve already crack the jigsaw puzzle!');
+						alert('You\'ve already crack the jigsaw puzzle in ' + jigsaw.elapse+ ' seconds!');
 						if(confirm('One more time?')){
+							jigsaw.timerStop();
+							$(that).data('status','');
 							jigsaw.restart();
 						}
 					}
@@ -336,7 +339,6 @@
 					return pos;
 				}
 			};
-
 
 			jigsaw.init();
 		});
