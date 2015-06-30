@@ -6,46 +6,103 @@
 
 	<style type="text/css">
 		#small{
-			position: absolute;
-			left : 5px;
-			top: 5px;
+			position: relative;
+			left : 10px;
+			top: 10px;
 			width:150px;
 			height:98px;
 			cursor: pointer;
 			background: url(images/demo.jpg) 0 0 no-repeat;
-			background-size: cover;
-			box-shadow: 0 0 10px #000;
+			background-size: 100% 100%;
+			box-shadow: 0 0 10px #000;border-radius: 10px;
 		}
 		#map {
 			position: absolute;
-			left : 50%;
+			margin-top:100px;
+			margin-bottom:100px;
+			left : 60%;
 			top: 50%;
-			margin-left:-245px;
-			margin-top:-197px;
-			width:450px;
-			height:299px;
-			background:#eef;
+			z-index: 1;
+			margin-left:-450px;
+			margin-top:-294px;
+			width:900px;
+			height:588px;
 			box-shadow: 0 0 10px #aaa;
 		};
-		.block {background:#baff00;position:absolute;cursor:pointer;box-sizing: border-box;-moz-box-sizing: border-box;-webkit-box-sizing: border-box;}
+
+		.diy {display: inline;}
+		.diy input{width:20px;}
+		.panel{
+			position:relative;
+			margin-top:240px;left:0px;
+			width:auto;
+			height:100px;
+		}
+		#timeSpan{border:1px solid #aaa;display:block;position:fixed;left:10px;bottom:10px;width:220px;text-align: center;color:#4198ce;height:32px;line-height: 32px;}
+		.panel ul {border-radius:4px;background: #eef;padding:0;width:220px;}
+		.panel ul li{list-style:none;width:100%;height:auto;line-height: 32px;text-align: center;cursor: pointer;margin-bottom:10px;}
+		.block {position:absolute;cursor:pointer;box-sizing: border-box;-moz-box-sizing: border-box;-webkit-box-sizing: border-box;}
 	</style>
 </head>
 <body>
 	<div id="small"></div>
 	<div id="map"></div>
+	<div class="panel">
+		<ul>
+			<li>
+				<span>游戏难度</span>
+				<select id="level">
+					<option value="2">2 * 2</option>
+					<option value="3">3 * 3</option>
+					<option value="4">4 * 4</option>
+				</select>
+				<div class="diy">
+					<div>行<input type="text">  列<input type="text"> <button id="startGame"> GO</button></div>
+				</div>
+			</li>
+			<li>
+				<span>上传图片<input type="file"></span>
+			</li>
+			<li>
+				<span>竞速模式</span>
+				<div class="contents"></div>
+			</li>
+			<li>
+				<span><a alt="my github" title="my github" href="https://github.com/overkazaf/jigsaw">Fork Me</a></span>
+			</li>
+		</ul>
+	</div>
+
+
+	<span id="timeSpan">Timer's Ready</span>
 </body>
 <script type="text/javascript" src="js/jquery-1.11.1.min.js"></script>
 <script type="text/javascript" src="js/jigsaw.js"></script>
 <script type="text/javascript">
 	$(function(){
-		$('#map').Jigsaw({
-			row : 3,
-			col : 2,
-			animateTime : 250,
-			context : '#map',
-			blockClass : 'block',
-			src : 'images/demo.jpg'
+		$('li').each(function (index){
+			if (index ^ 1) {
+				$(this).css({
+					background : '#aaa'
+				});
+			} else {
+				$(this).css({
+					background : '#fff'
+				});
+			}
 		});
+
+		$('#btn').on('click', function (){
+			$('#map').Jigsaw({
+				row : 2,
+				col : 4,
+				animateTime : 250,
+				context : '#map',
+				blockClass : 'block',
+				src : 'images/demo.jpg'
+			});
+		});
+		
 	});
 </script>
 </html>

@@ -16,12 +16,13 @@
 				height : $(that).height()
 			};
 			var opt = $.extend({}, $.fn.Jigsaw.defaults, options || {});
-
-			log(opt);
+			var $time = $(opt.timeSpan);
+			alert($time.html());
 			var $movedElement = null;
 			var currentIndex = -1;
 			var currentOffset = {};
 			var jigsaw = {
+				counter : null,
 				blocks : [],
 				isAnimating : false,
 				indexArray : [],
@@ -63,9 +64,11 @@
 								top : y,
 								width : w + 'px',
 								height : h + 'px',
-								border : '1px solid #baff00',
+								outline : '2px solid #fff',
+								'box-shadow' : '0 0 10px #aaa',
 								'box-sizing' : 'border-box',
 								background : bg,
+								'border-radius' : '10px',
 								'background-position' : '-' + x + ' -' + y
 							}).attr('data-index', index);
 							blocks.push(div);
@@ -129,15 +132,6 @@
 							$fragment.append(blocks[current]);
 						}
 					}
-					log(arr.sort(function(a, b){
-						var t1 = a.split(',');
-						var t2 = b.split(',');
-						if(t1[0] == t2[0]){
-							return t1[1] - t2[1];
-						} else {
-							return t1[0] - t2[0];
-						}
-					}));
 				},
 				swapBlock : function(fromIndex, toIndex){
 
@@ -151,7 +145,8 @@
 						// reset position
 						$movedElement.animate({
 							left : targetLeft + 'px',
-							top : targetTop + 'px'
+							top : targetTop + 'px',
+							'opacity' : 1
 						}, opt.animateTime , 'swing', function(){
 							$movedElement.css('z-index', 0);
 							$movedElement = null;
@@ -166,7 +161,8 @@
 						var tt = toOffset.top - $(that).offset().top;
 						$movedElement.animate({
 							left : tl + 'px',
-							top : tt + 'px'
+							top : tt + 'px',
+							'opacity' : 1
 						},opt.animateTime ,  'swing', function(){
 							$movedElement.css('z-index', 0);
 							$movedElement = null;
@@ -193,6 +189,23 @@
 				},
 				render : function(){
 					this.$fragment.appendTo($(opt.context));
+					jigsaw.timerStart();
+				},
+				timerStart: function (){
+					jigsaw.startTime = +new Date();
+					jigsaw.elapse = 0;
+					jigsaw.counter = setInterval(function(){
+						jigsaw.elapse++;
+						$time.html(jigsaw.elapse);
+					}, 1000);
+				},
+				timerStop : function (){
+					clearInterval(jigsaw.counter);
+					jigsaw.counter = null;
+				},
+				timerReset : function(){
+					jigsaw.timerStop();
+					jigsaw.timerStart();
 				},
 				bindEvents : function(){
 					var _this_ = this;
@@ -244,7 +257,8 @@
 					var deltaY = y - $movedElement.attr('data-y');
 					$movedElement.css({
 						left : deltaX + 'px',
-						top : deltaY + 'px'
+						top : deltaY + 'px',
+						'opacity' : 0.7
 					});
 				},
 				dragEnd : function(ev){
@@ -264,21 +278,20 @@
 				checkSuccess : function(){
 					var pos = jigsaw.calcPosition();
 					var flag = true;
-
+					log('========================= Comparing =========================');
 					for (var i=0, l=pos.length; i<l; i += opt.row) {
 						var s = pos[i];
 						log(s.left, s.top);
 						for (var j=i+1, lr = opt.row-1; lr>0; j++,lr--) {
 							log(pos[j].left, pos[j].top);
-							if(s.left < pos[j].left && s.top == pos[j].top){
+							if(s.left < pos[j].left && ~~s.top == ~~pos[j].top){
 								s = pos[j];
 								continue;
 							} else {
-								flag = false;
+								flag = false;break;
 							}
 						}
 					}
-					log('======================================================');
 					if(flag){
 						alert('You\'ve already crack the jigsaw puzzle!');
 						if(confirm('One more time?')){
@@ -338,7 +351,8 @@
 		animateTime : 250,
 		context : '#map',
 		blockClass : 'block',
-		src : 'images/demo.jpg'
+		src : 'images/demo.jpg',
+		timeSpan : '#timeSpan'
 	};
 
 })(jQuery)
