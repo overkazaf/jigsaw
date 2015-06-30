@@ -110,14 +110,9 @@
 							// verticle push
 							var current = parseInt(i*opt.col + j);
 							var ic = indexArray[current];
-							var t;
-							var l;
-							
-							t = ic < opt.row ? 0 : ~~(ic / opt.row);
-							l = ic % opt.col;
+							var t = Math.floor(ic / opt.col);
+							var l = ic % opt.col;
 
-							
-							arr.push(t+','+l);
 							l = l*w + 'px';
 							t = t*h + 'px';
 							
