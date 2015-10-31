@@ -125,7 +125,7 @@
 
 		$('#prevBtn').on('click', function (){
 			--current;
-			if (current <= 0) current = defaultImages.length - 1;
+			if (current < 0) current = defaultImages.length - 1;
 			$('#small').css({
 				'background' : 'url('+defaultImages[current] +') 0 0 no-repeat',
 				'background-size' : '100% 100%'
