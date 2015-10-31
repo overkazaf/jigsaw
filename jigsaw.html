@@ -10,7 +10,7 @@
 		body{font-family: "Microsoft Yahei";}
 		#small{
 			position: absolute;
-			left : 10px;
+			left : 30px;
 			top: 10px;
 			width:300px;
 			height:196px;
@@ -18,6 +18,18 @@
 			background: url(images/demo.jpg) 0 0 no-repeat;
 			background-size: 100% 100%;
 			box-shadow: 0 0 10px #000;border-radius: 10px;
+		}
+
+		#small:before{
+			position: absolute;left:0;
+			content : '<';text-indent:-20px;font-family: "Heiti";
+			color:#999;font-size: 60px;line-height: 196px;width:20px;font-weight: bold;
+		}
+
+		#small:after {
+			position: absolute;font-family: "Heiti";
+			content : '>';text-indent:10px;right:0;
+			color:#999;font-size: 60px;line-height: 196px;width:20px;font-weight: bold;
 		}
 		#map {
 			position: absolute;
@@ -56,7 +68,7 @@
 	<div id="map">
 		<p><h4>Choose a level to start</h4></p>
 		<p>Drag debris to the correct position</p>
-		<p>Quite easy, enjoy it, hit <b style="color:#f40;">GO</b>.</p>
+		<p>Quite easy, enjoy it, hit <strong style="color:#f40;">GO</strong>.</p>
 		<p></p>
 		<p>Created By John Nong</p>
 	</div>
@@ -68,9 +80,15 @@
 					<option value="2" selected>2 * 2</option>
 					<option value="3">3 * 3</option>
 					<option value="4">4 * 4</option>
+					<option value="5">5 * 5</option>
+					<option value="6">6 * 6</option>
+					<option value="7">7 * 7</option>
+					<option value="8">8 * 8</option>
+					<option value="9">9 * 9</option>
+					<option value="10">10 * 10</option>
 				</select>
 				<div class="diy">
-					<div>(DIY:)   Row <input type="text">  Column <input type="text"> <button id="startGame"> GO</button></div>
+					<div>DIY: =>   Row <input type="text">  Column <input type="text"> <button id="startGame"> GO</button></div>
 				</div>
 			</li>
 			<!--
@@ -96,27 +114,39 @@
 <script type="text/javascript" src="js/jigsaw.js"></script>
 <script type="text/javascript">
 	$(function(){
+		var defaultImages = [
+			'images/demo.jpg'
+		];
+
 
 		$('#startGame').on('click', function (){
 			var aDiy = $('.diy').find('input');
 			var row = aDiy.first().val();
 			var col = aDiy.last().val();
 			if(row && col && !isNaN(row) && !isNaN(col) && row > 0 && col > 0){
-				// 取自定义参数
+				if (row * col > 1000) {
+					alert('参数非法');
+					return;
+				}
 			} else {
 				row = col = $('#level').find('option:selected').val();
 			}
 			
 			var fnStart = function(){
+				var imgUrl = $('#small').css('backgroundImage');
+					imgUrl = imgUrl.substring(imgUrl.indexOf('jigsaw/') + 7, imgUrl.lastIndexOf('jpg') + 3);
+
 				$('#timeSpan').empty();
+
 				$('#map').empty().Jigsaw({
 					row : +row,
 					col : +col,
 					animateTime : 250,
 					context : '#map',
 					blockClass : 'block',
-					src : 'images/demo.jpg'
+					src : imgUrl
 				});
+
 			};
 			// force to empty the innerHTML and start, lol
 			if ($('#map').data('status') == 'running') {
