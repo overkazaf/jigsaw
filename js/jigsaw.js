@@ -11,9 +11,11 @@
     var cache;
     $.fn.Jigsaw = function(options) {
     	if ($(this).attr('data-jigsaw')) {
-    		log('restart');
-    		return cache.restart();
+    		cache.destroy();
+    		cache = null;
+    		$(this).removeAttr('data-jigsaw');
     	}
+
         return this.each(function() {
 
             var that = this;
@@ -200,6 +202,10 @@
                             currentIndex = -1;
                         }
                     },
+                    destroy : function (){
+                    	this.timerStop();
+                    	this.unbindEvents();
+                    },
                     render: function() {
                         this.$fragment.appendTo($(opt.context));
                         $(that).data('status', 'running');
@@ -233,6 +239,13 @@
                         var blocks = this.blocks;
                         $.each(blocks, function() {
                             $(this).off('mousedown').on('mousedown', _this_.dragStart);
+                        });
+                    },
+                    unbindEvents : function () {
+                    	var _this_ = this;
+                        var blocks = this.blocks;
+                        $.each(blocks, function() {
+                            $(this).off('mousedown', _this_.dragStart);
                         });
                     },
                     dragStart: function(ev) {
@@ -375,7 +388,8 @@
                         return pos;
                     }
                 };
-            cache = jigsaw.init();
+            jigsaw.init();
+            cache = jigsaw;
             $(this).attr('data-jigsaw', true);
         });
     };
