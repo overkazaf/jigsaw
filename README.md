@@ -8,7 +8,7 @@
 
 
 #Next Step
-[x] fix algorithm bugs with the certain circumstances 
-[x] fix timer bugs
-[x] provide more puzzles
+[+] fix algorithm bugs with the certain circumstances 
+[+] fix timer bugs
+[+] provide more puzzles
 [x] provide online competing, will intergrate SocketIO later
