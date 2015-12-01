@@ -2,13 +2,13 @@
 
 ##Using a plugin to initialize the game
 
-+Add timer
-+Provide defferent levels, allow customizing levels
+* Add timer
+* Provide defferent levels, allow customizing levels
 
 
 
 #Next Step
-[+] fix algorithm bugs with the certain circumstances 
-[+] fix timer bugs
-[+] provide more puzzles
-[x] provide online competing, will intergrate SocketIO later
++ fix algorithm bugs with the certain circumstances 
++ fix timer bugs
++ provide more puzzles
++ provide online competing, will intergrate SocketIO later
