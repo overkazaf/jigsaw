@@ -339,7 +339,7 @@
 
                         }
                         if (flag) {
-                            alert('You\'ve already crack the jigsaw puzzle in ' + jigsaw.elapse + ' seconds!');
+                            alert('You\'ve successfully cracked the jigsaw puzzle in ' + jigsaw.elapse + ' seconds!');
 
                             $(that).data('status', '');
                             if (confirm('One more time?')) {
